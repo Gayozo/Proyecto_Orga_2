@@ -26,8 +26,6 @@ El sistema está orientado a optimizar la gestión operativa y de autogestión e
 ## 🛠️ Requisitos Previos
 
 Antes de ejecutar el proyecto localmente, asegúrate de contar con:
-* [Node.js](https://nodejs.org/) (versión LTS recomendada).
-* [PostgreSQL](https://www.postgresql.org/) (o el motor de base de datos acordado).
 * [Git](https://git-scm.com/) configurado en tu equipo.
 
 ---
