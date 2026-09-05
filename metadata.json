@@ -1,0 +1,6 @@
+{
+  "name": "Lactolanda - Logística Integral & Cadena de Valor",
+  "description": "Beta demostrativa del sistema de gestión logística integral y cadena de valor para Lactolanda con trazabilidad, inventario capilar, logística inversa y arquitectura relacional.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
