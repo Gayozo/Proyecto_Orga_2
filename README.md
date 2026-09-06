@@ -86,13 +86,14 @@ npm install-scripts approve @google/genai
 npm run dev
 ```
 El proyecto levantará en ~200 ms con Vite HMR. Abre en tu navegador:
-
+```bash
 http://localhost:3000
-
+```
 (Si el puerto 3000 está en uso, Vite abrirá en el siguiente libre o puedes forzarlo con npm run dev -- --port 5173).
 
 # 💻 Configuración Recomendada de Visual Studio Code
 1. Extensiones sugeridas
+```bash
 Instala las siguientes herramientas desde la pestaña de Extensiones (Ctrl+Shift+X):
 
 Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss): Autocompletado y vista previa de clases.
@@ -100,7 +101,7 @@ Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss): Autocompletado y vista pr
 Prettier - Code Formatter (esbenp.prettier-vscode): Formateo uniforme al guardar.
 
 ESLint (dbaeumer.vscode-eslint): Validación y prevención de errores en TypeScript/React.
-
+```
 2. Ajustes de espacio de trabajo (.vscode/settings.json)
 Crea el archivo .vscode/settings.json en la raíz del proyecto para asegurar formateo automático:
 
