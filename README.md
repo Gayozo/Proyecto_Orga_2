@@ -16,10 +16,15 @@ Proyecto de desarrollo de software aplicado para la cátedra de **Organización 
 ## 📌 Descripción del Proyecto
 
 Sistema web integral orientado a modelar, digitalizar y optimizar la cadena de valor y logística de una empresa láctea:
-* **Ingreso y Materia Prima:** Registro y trazabilidad de leche cruda desde tambos remitentes.
-* **Trazabilidad y Lotes:** Control del árbol de transformación industrial y almacenamiento.
-* **Distribución y Stock:** Red de 13 Centros de Distribución (CEDIs) y despacho a 65 distribuidores mayoristas.
-* **Logística Inversa:** Consola técnica de devoluciones por avería de envases, exceso de inventario, vencimiento y productos defectuosos.
+* **Ingreso y Materia Prima:** Registro y trazabilidad de leche cruda desde tambos remitentes con balance térmico y volumétrico.
+* **Trazabilidad y Lotes:** Árbol genealógico industrial multinivel (de tambo a mayorista) con protocolo de bloqueo sanitario preventivo ERP.
+* **Distribución y Stock:** Red territorial de 13 Centros de Distribución (CEDIs) y despacho capilar a 65 distribuidores mayoristas con mapa interactivo SVG.
+* **Logística Inversa & Custodia Antifraude:** Consola técnica de devoluciones comerciales con cruce automático de legitimidad de despacho (RUC vs. Factura de Salida vs. Lote) para impedir fraudes en la cadena.
+* **Módulo Fiscal SIFEN / DNIT (KuDE):** Emisión y aprobación de Notas de Crédito Electrónicas oficiales con Timbrado N° 16428910, CDC inmutable de 44 dígitos y liquidación automática de IVA 5% (Ley N° 6380/19).
+* **Base de Datos Relacional y Consola SQL:** Modelo 3NF formal, diagrama ERD interactivo, diccionario de datos (incluyendo `FAC_NOTAS_CREDITO`) y motor de simulación de consultas SQL en tiempo real.
+
+
+
 
 ---
 
@@ -49,31 +54,37 @@ Antes de comenzar, valida que tu estación de trabajo cuente con los siguientes 
 Sigue esta secuencia de comandos en tu terminal para clonar y ejecutar la plataforma:
 
 ### Paso 1: Clonar el repositorio y posicionarse en la carpeta
-
+```bash
 git clone <URL_DEL_REPOSITORIO>
 cd sistema-autogestion-lactea
-
+```
 ### Paso 2: Crear el archivo de entorno local
 Genera tu archivo `.env` a partir de la plantilla:
 
-# En Windows (PowerShell):
+### En Windows (PowerShell):
+```bash
 Copy-Item .env.example .env
-
-# En Linux / macOS / Git Bash:
+```
+### En Linux / macOS / Git Bash:
+```bash
 cp .env.example .env
-
+```
 ### Paso 3: Instalar dependencias del proyecto
+```bash
 npm install
+```
 
 Si la consola advierte sobre scripts bloqueados de esbuild o protobufjs, autorízalos con:
-
+```bash
+npm install --legacy-peer-deps
 npm install-scripts approve esbuild
 npm install-scripts approve protobufjs
 npm install-scripts approve @google/genai
-
+```
 ### Paso 4: Iniciar el servidor local de desarrollo
+```bash
 npm run dev
-
+```
 El proyecto levantará en ~200 ms con Vite HMR. Abre en tu navegador:
 
 http://localhost:3000
@@ -94,7 +105,7 @@ ESLint (dbaeumer.vscode-eslint): Validación y prevención de errores en TypeScr
 Crea el archivo .vscode/settings.json en la raíz del proyecto para asegurar formateo automático:
 
 JSON
-```
+```bash
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -106,15 +117,22 @@ JSON
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000
 }
-````
-# 📜 Catálogo de Comandos (package.json)
+```
+---
+
+### 3. Actualización en: `📜 Catálogo de Comandos (package.json)`
+
+*Tu `package.json` incluye el script `clean` (`rm -rf dist server.js`), el cual es fundamental para que los desarrolladores limpien compilaciones previas o artefactos viejos si experimentan problemas de caché.*
+
+Reemplaza la tabla de comandos por esta:
 
 | Comando | Script | Utilidad | Cuándo usarlo |
 | :--- | :--- | :--- | :--- |
-| `npm run dev` | `vite --port=3000 --host=0.0.0.0` | Servidor local con recarga instantánea en caliente. | Durante el desarrollo cotidiano. |
-| `npm run build` | `vite build` | Compila y minifica TypeScript, React y CSS en `/dist`. | Previo a entregas o despliegue. |
-| `npm run preview` | `vite preview` | Levanta un servidor local sobre el código de `/dist`. | Para validar el empaquetado final. |
-| `npm run lint` | `tsc --noEmit` | Analiza errores de tipos TypeScript sin emitir código. | Antes de hacer commit o abrir PR. |
+| `npm run dev` | `vite --port=3000 --host=0.0.0.0` | Servidor local con recarga instantánea en caliente (HMR). | Durante el desarrollo cotidiano. |
+| `npm run build` | `vite build` | Compila y optimiza TypeScript, React y Tailwind CSS v4 en `/dist`. | Previo a entregas o despliegue. |
+| `npm run preview` | `vite preview` | Levanta un servidor local sobre el código compilado de `/dist`. | Para validar el empaquetado final. |
+| `npm run lint` | `tsc --noEmit` | Analiza errores de tipos TypeScript sin emitir archivos. | Antes de hacer commit o abrir un PR. |
+| `npm run clean` | `rm -rf dist server.js` | Elimina carpetas y artefactos temporales de compilación. | Si necesitas compilar desde cero o limpiar caché. |
 
 
 # 🌿 Flujo de Trabajo y Versionado (Git Flow)
@@ -130,8 +148,8 @@ Desarrollo de Funcionalidades:
 
 Cada integrante debe crear una rama partiendo siempre de develop:
 
-Bash
-```
+
+```bash
 git checkout develop
 git pull origin develop
 git checkout -b feature/nombre-de-tu-tarea
@@ -139,16 +157,16 @@ git checkout -b feature/nombre-de-tu-tarea
 
 Realizar commits atómicos y claros:
 
-Bash
-```
+
+```bash
 git add .
 git commit -m "feat: implementar selector interactivo de cedis"
 ```
 
 Subir la rama a GitHub:
 
-Bash
-```
+
+```bash
 git push -u origin feature/nombre-de-tu-tarea
 ```
 
@@ -167,8 +185,8 @@ Error: Port 3000 is in use, trying another one...:
 
 Hay otra aplicación abierta en ese puerto. Fuerza un puerto libre ejecutando:
 
-Bash
-```
+
+```bash
 npm run dev -- --port 5173
 ```
 
@@ -177,7 +195,7 @@ Error en Windows PowerShell: "La ejecución de scripts está deshabilitada en es
 Abre PowerShell como Administrador y ejecuta:
 PowerShell
 
-```
+```bash
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 Confirma con la tecla S (Sí) y reinicia la terminal.
@@ -185,3 +203,11 @@ Confirma con la tecla S (Sí) y reinicia la terminal.
 VS Code resalta advertencias rojas falsas en TypeScript:
 
 Presiona Ctrl + Shift + P (o Cmd + Shift + P en Mac), ejecuta TypeScript: Restart TS Server y confirma haber ejecutado npm install.
+
+Error al ejecutar `npm install` (ERESOLVE unable to resolve dependency tree):
+
+Ocurre si tu versión de npm aplica restricciones severas de dependencias entre paquetes secundarios y React 19. Resuélvelo ejecutando:
+
+```bash
+npm install --legacy-peer-deps
+```
