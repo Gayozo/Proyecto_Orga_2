@@ -8,8 +8,9 @@ import { Screen3InventoryDistribution } from './components/screens/Screen3Invent
 import { Screen4ReverseLogistics } from './components/screens/Screen4ReverseLogistics';
 import { Screen5DatabaseViewer } from './components/screens/Screen5DatabaseViewer';
 import { Screen6ArchitectureDocs } from './components/screens/Screen6ArchitectureDocs';
-import { LOTES_DATA, INITIAL_DEVOLUCIONES, INITIAL_TRANS_INVENTARIO } from './data/mockData';
-import { RegLote, TransDevolucion, TransInventario } from './types';
+import { GuiaTecnica } from './components/screens/guia_tecnica';
+import { LOTES_DATA, INITIAL_DEVOLUCIONES, INITIAL_TRANS_INVENTARIO, INITIAL_NOTAS_CREDITO } from './data/mockData';
+import { RegLote, TransDevolucion, TransInventario, FacNotaCredito } from './types';
 
 export default function App() {
   const [activeScreen, setActiveScreen] = useState<number>(1);
@@ -19,6 +20,7 @@ export default function App() {
   const [lotsList, setLotsList] = useState<RegLote[]>(LOTES_DATA);
   const [devoluciones, setDevoluciones] = useState<TransDevolucion[]>(INITIAL_DEVOLUCIONES);
   const [inventario, setInventario] = useState<TransInventario[]>(INITIAL_TRANS_INVENTARIO);
+  const [notasCredito, setNotasCredito] = useState<FacNotaCredito[]>(INITIAL_NOTAS_CREDITO);
 
   // Handler to toggle lot status (e.g. Block in ERP or Release)
   const handleToggleLotStatus = (lotId: string) => {
@@ -37,8 +39,11 @@ export default function App() {
   };
 
   // Handler to register a new return from Screen 4
-  const handleAddDevolucion = (newDev: TransDevolucion) => {
+  const handleAddDevolucion = (newDev: TransDevolucion, newNc?: FacNotaCredito) => {
     setDevoluciones((prev) => [newDev, ...prev]);
+    if (newNc) {
+      setNotasCredito((prev) => [newNc, ...prev]);
+    }
 
     // Also register the complementary return movement in TRANS_INVENTARIO if relevant
     const newMovement: TransInventario = {
@@ -91,6 +96,7 @@ export default function App() {
               lotsList={lotsList}
               onToggleLotStatus={handleToggleLotStatus}
               onNavigateScreen={setActiveScreen}
+              notasCredito={notasCredito}
             />
           )}
 
@@ -104,6 +110,7 @@ export default function App() {
               onAddDevolucion={handleAddDevolucion}
               lotsList={lotsList}
               onToggleLotStatus={handleToggleLotStatus}
+              notasCredito={notasCredito}
             />
           )}
 
@@ -116,6 +123,10 @@ export default function App() {
 
           {activeScreen === 6 && (
             <Screen6ArchitectureDocs onNavigateScreen={setActiveScreen} />
+          )}
+
+          {activeScreen === 7 && (
+            <GuiaTecnica />
           )}
         </div>
 
@@ -133,6 +144,10 @@ export default function App() {
             <span className="text-slate-300">|</span>
             <span>
               TRANS_DEVOLUCIONES: <strong className="text-slate-700">{devoluciones.length}</strong>
+            </span>
+            <span className="text-slate-300">|</span>
+            <span>
+              FAC_NOTAS_CREDITO: <strong className="text-emerald-700 font-bold">{notasCredito.length}</strong>
             </span>
             <span className="text-slate-300 hidden sm:inline">|</span>
             <span className="hidden sm:inline">

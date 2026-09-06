@@ -743,12 +743,12 @@ export const GuiaTecnica: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-blue-600" />
-                    Quiero agregar o modificar Tambos, CEDIs, Mayoristas, Lotes o Productos:
+                    Quiero agregar o modificar Tambos, CEDIs, Mayoristas, Lotes, Custodia o Comprobantes KuDE:
                   </span>
                   <code className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">src/data/mockData.ts</code>
                 </div>
                 <p className="text-[10.5px] text-slate-600">
-                  En este archivo se encuentran las listas <code>CEDIS_LIST</code> (los 13 centros de distribución con sus coordenadas SVG de Paraguay), <code>MAYORISTAS_DATA</code> (los 65 mayoristas), <code>LOTES_DATA</code> y <code>FLUJOS_TABLA_DATA</code>. Simplemente edita los objetos o agrega nuevos elementos respetando la interfaz.
+                  En este archivo se encuentran las listas <code>CEDIS_LIST</code> (los 13 centros con coordenadas SVG), <code>MAYORISTAS_DATA</code> (65 mayoristas), <code>LOTES_DATA</code>, <code>FLUJOS_TABLA_DATA</code>, así como el mapa antifraude <code>LOTE_CUSTODIA_MAP</code> (factura de venta, chofer, furgón de frío y saldo disponible) y los comprobantes fiscales iniciales <code>INITIAL_NOTAS_CREDITO</code> (KuDE con timbrado DNIT N° 16428910 y CDC de 44 dígitos).
                 </p>
               </div>
 
@@ -757,12 +757,12 @@ export const GuiaTecnica: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-purple-600" />
-                    Quiero añadir nuevos atributos a las entidades (ej: nuevo campo en un Lote o CEDI):
+                    Quiero añadir o modificar contratos e interfaces (ej: FacNotaCredito, CustodiaLoteInfo o RegLote):
                   </span>
                   <code className="text-[10px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold">src/types.ts</code>
                 </div>
                 <p className="text-[10.5px] text-slate-600">
-                  Contiene todas las interfaces maestras del modelo relacional. Si agregas por ejemplo <code>certificacion_senacsa?: string</code> en <code>RegLote</code>, el compilador TypeScript te indicará automáticamente dónde debes suministrar ese nuevo dato.
+                  Contiene todas las interfaces maestras del modelo relacional. Aquí se definen los contratos <code>FacNotaCredito</code> (19 atributos fiscales oficiales como timbrado, CDC de 44 dígitos y liquidación IVA 5%) y <code>CustodiaLoteInfo</code>. Si alteras un campo, TypeScript te alertará en todos los archivos que lo consumen.
                 </p>
               </div>
 

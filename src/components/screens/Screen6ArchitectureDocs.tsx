@@ -29,7 +29,11 @@ import {
   Milestone,
   HelpCircle,
   Lightbulb,
-  Workflow
+  Workflow,
+  Receipt,
+  ShieldAlert,
+  Printer,
+  QrCode
 } from 'lucide-react';
 import { CEDIS_LIST, FLUJOS_TABLA_DATA } from '../../data/mockData';
 
@@ -62,7 +66,7 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
           {/* Quick Metrics / Tags */}
           <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
             <span className="px-2 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 font-bold">
-              Versión: Beta v2.4
+              Versión: Beta v2.5
             </span>
             <span className="px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 font-bold">
               12 Nodos TGS
@@ -72,6 +76,12 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
             </span>
             <span className="px-2 py-1 rounded bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold">
               84 Actores Relacionales
+            </span>
+            <span className="px-2 py-1 rounded bg-purple-50 border border-purple-200 text-purple-700 font-bold">
+              KuDE SIFEN / DNIT (IVA 5%)
+            </span>
+            <span className="px-2 py-1 rounded bg-amber-50 border border-amber-200 text-amber-700 font-bold">
+              Custodia Antifraude
             </span>
           </div>
         </div>
@@ -289,6 +299,18 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                   Visualizador del diagrama Entidad-Relación formal, explorador de tablas (DIM_ACTORES, DIM_PRODUCTOS, REG_LOTES, etc.) y consola SQL en tiempo real para verificar integridad referencial y consultas de auditoría.
                 </p>
               </div>
+
+              {/* Milestone 8 */}
+              <div className="relative">
+                <span className="absolute -left-7 top-1 w-3.5 h-3.5 rounded-full bg-purple-600 border-2 border-white ring-2 ring-purple-200" />
+                <div className="font-mono text-xs font-bold text-slate-900 flex items-center gap-2">
+                  <span>Hito 8: Módulo Fiscal SIFEN / DNIT (KuDE) y Validación de Custodia Antifraude</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 font-normal">Legal & Tributario</span>
+                </div>
+                <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                  Integración de la entidad <code>FAC_NOTAS_CREDITO</code> (relación 1:1 con <code>TRANS_DEVOLUCIONES</code>) para emitir el comprobante electrónico KuDE oficial de la DNIT con timbrado N° 16428910 y CDC inmutable de 44 dígitos. Incorporación del motor de validación cruzada de custodia comercial (RUC vs. Factura de Salida vs. Lote) y liquidación automatizada del IVA al 5% según Ley N° 6380/19.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -435,6 +457,123 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                 </tbody>
               </table>
             </div>
+
+            {/* Sub-alerta de Coexistencia de Fechas */}
+            <div className="mt-3 p-2.5 rounded-lg border border-amber-300 bg-amber-50/80 font-mono text-[10.5px]">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-amber-950 font-bold">Regla Sanitaria de Coexistencia de Fechas (Código Sanitario Ley N° 836/80):</strong>
+                  <p className="text-amber-900 text-[10px] mt-0.5 leading-relaxed">
+                    Si el lote seleccionado registra fecha de caducidad sobrepasada (días para vencer ≤ 0), el autómata de calidad <strong>deshabilita irrevocablemente</strong> las opciones de <em>"Averiado (Re-Empaque)"</em> y <em>"Exceso (Reubicación)"</em>, forzando la causal exclusiva a <em>"Vencido (Destrucción / Efluentes F14)"</em>. Ningún producto lácteo vencido puede volver al circuito comercial bajo ninguna salvedad comercial o administrativa.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Marco Legal & Fiscal Paraguayo (KuDE SIFEN / DNIT) */}
+          <div className="bg-white rounded-lg border border-slate-200 p-3.5 shadow-xs">
+            <h3 className="text-xs font-bold text-slate-900 font-mono flex items-center gap-1.5 mb-1">
+              <Receipt className="w-4 h-4 text-purple-600" />
+              3. Marco Legal & Fiscal Paraguayo: Nota de Crédito Electrónica (KuDE / SIFEN - DNIT)
+            </h3>
+            <p className="text-[11px] text-slate-600 mb-3">
+              En la República del Paraguay, la devolución de mercaderías no es un mero ajuste operativo de almacén: exige por ley la emisión y aprobación de un documento tributario electrónico oficial ante la <strong>Dirección Nacional de Ingresos Tributarios (DNIT)</strong> bajo el <strong>Sistema Integrado de Facturación Electrónica Nacional (SIFEN)</strong>:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 font-mono text-[10.5px]">
+              {/* Bloque 1: KuDE y SIFEN */}
+              <div className="p-2.5 rounded-lg border border-purple-200 bg-purple-50/40 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-purple-900 font-bold text-xs">
+                  <FileText className="w-3.5 h-3.5 text-purple-700" />
+                  Estructura Oficial del KuDE (Kuatiaha Digital Electrónico)
+                </div>
+                <p className="text-slate-700 text-[10px] leading-relaxed">
+                  El KuDE es la representación gráfica oficial del Documento Tributario Electrónico (DTE). Cada Nota de Crédito emitida en la logística inversa de Lactolanda incorpora:
+                </p>
+                <div className="bg-white p-2 rounded border border-purple-200 space-y-1 text-[9.5px]">
+                  <div>• <strong>Emisor Oficial:</strong> Cooperativa de Productores de Leche La Holanda Ltda. (RUC <code>80017429-5</code>).</div>
+                  <div>• <strong>Timbrado DNIT:</strong> N° <code>16428910</code> (Habilitado para Facturación y Notas de Crédito Electrónicas).</div>
+                  <div>• <strong>Numeración Legal:</strong> Serie <code>001-005-XXXXXXX</code> (Establecimiento 001 Central, Punto 005 Inversa).</div>
+                  <div>• <strong>Código de Control (CDC) de 44 Dígitos:</strong> Hash inmutable estructurado por SIFEN que garantiza que el documento no fue adulterado tras su emisión.</div>
+                  <div>• <strong>Código QR Bidimensional:</strong> Permite escanear y verificar la aprobación en tiempo real en los servidores de la DNIT.</div>
+                </div>
+              </div>
+
+              {/* Bloque 2: Ley 6380/19 e IVA 5% */}
+              <div className="p-2.5 rounded-lg border border-indigo-200 bg-indigo-50/40 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-indigo-900 font-bold text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-700" />
+                  Liquidación Tributaria IVA 5% (Ley N° 6380/19)
+                </div>
+                <p className="text-slate-700 text-[10px] leading-relaxed">
+                  Conforme a la Ley N° 6380/19 de Modernización y Simplificación del Sistema Tributario Nacional, los productos de la canasta láctea (leche fluida, yogures, quesos básicos) tributan una tasa diferenciada del <strong>5%</strong>:
+                </p>
+                <div className="bg-white p-2 rounded border border-indigo-200 space-y-1 text-[9.5px]">
+                  <div>• <strong>Base Imponible Gravada al 5%:</strong> Monto total del crédito otorgado por los litros devueltos según precio mayorista.</div>
+                  <div>• <strong>Fórmula Oficial de Liquidación:</strong>
+                    <div className="font-bold text-indigo-800 bg-indigo-50 p-1 rounded mt-0.5 text-center">
+                      IVA (5%) = Total Gravado en Guaraníes / 21
+                    </div>
+                  </div>
+                  <div>• <strong>Asociación Fiscal 1:1:</strong> La Nota de Crédito referencia de forma inmutable la <strong>Factura de Venta de Salida original</strong> que originó el despacho, evitando duplicidad contable o créditos no fundamentados.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Protocolo Antifraude y Cadena de Custodia */}
+          <div className="bg-white rounded-lg border border-slate-200 p-3.5 shadow-xs">
+            <h3 className="text-xs font-bold text-slate-900 font-mono flex items-center gap-1.5 mb-1">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              4. Protocolo Antifraude y Cadena de Custodia Comercial de Lotes
+            </h3>
+            <p className="text-[11px] text-slate-600 mb-2.5">
+              En la cadena de distribución capilar de consumo masivo, uno de los mayores riesgos de pérdida financiera y fraude es la devolución cruzada (mayoristas que intentan devolver mermas adquiridas a terceros o de canales informales a nombre de un cliente solvente). Para blindar la operación, el sistema ejecuta un cruce de custodia en milisegundos:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 font-mono text-[10.5px]">
+              {/* Escenario 1 */}
+              <div className="p-2.5 rounded-lg border border-emerald-300 bg-emerald-50/70">
+                <div className="flex items-center gap-1.5 text-emerald-950 font-bold text-xs mb-1">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Escenario 1: Custodia Comercial Confirmada (Luz Verde)
+                </div>
+                <p className="text-slate-700 text-[10px] mb-2 leading-relaxed">
+                  Ocurre cuando el RUC del distribuidor solicitante coincide fehacientemente con la orden de salida y factura registrada en el ERP de Lactolanda:
+                </p>
+                <div className="bg-white p-2 rounded border border-emerald-200 space-y-1 text-[9.5px]">
+                  <div className="flex items-center gap-1 text-emerald-800 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Badge de Éxito: [CUSTODIA CONFIRMADA - Factura Venta N° 001-003-XXXXX]
+                  </div>
+                  <div>• Se muestra el <strong>Furgón Frío y Chapa</strong> con el que se despachó el lote (trazabilidad de frío).</div>
+                  <div>• Se despliega el <strong>Saldo Facturado Disponible</strong> para evitar que se devuelvan más litros de los despachados originalmente.</div>
+                  <div>• El botón de procesamiento queda <strong>habilitado</strong> para enviar a SIFEN.</div>
+                </div>
+              </div>
+
+              {/* Escenario 2 */}
+              <div className="p-2.5 rounded-lg border border-rose-300 bg-rose-50/70">
+                <div className="flex items-center gap-1.5 text-rose-950 font-bold text-xs mb-1">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  Escenario 2: Alerta de Inconsistencia / Fraude (Bloqueo Rojo)
+                </div>
+                <p className="text-slate-700 text-[10px] mb-2 leading-relaxed">
+                  Ocurre cuando el mayorista intenta ingresar un lote que fue facturado y despachado a otro distribuidor zonal o sin registro previo:
+                </p>
+                <div className="bg-white p-2 rounded border border-rose-200 space-y-1 text-[9.5px]">
+                  <div className="flex items-center gap-1 text-rose-800 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-rose-600" />
+                    Badge de Bloqueo: [SEGURIDAD - Lote No Perteneciente al Distribuidor]
+                  </div>
+                  <div>• Se alerta inmediatamente al operador mostrando a qué mayorista le corresponde la custodia legal real del lote.</div>
+                  <div>• El botón de procesamiento se <strong>bloquea estrictamente</strong> impidiendo la generación de la Nota de Crédito.</div>
+                  <div>• Se evita el fraude fiscal y el pago indebido de créditos comerciales.</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -490,9 +629,9 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
               <div className="p-2 rounded bg-slate-900 text-white font-mono text-[10.5px]">
                 <div className="text-emerald-400 font-bold mb-1">/src/</div>
                 <div className="pl-3 space-y-1 text-slate-300">
-                  <div>├── <strong className="text-sky-300">App.tsx</strong>: Orquestador raíz. Administra el estado global compartido (<code>activeScreen</code>, <code>lotsList</code>, <code>devoluciones</code>, <code>inventario</code>).</div>
-                  <div>├── <strong className="text-sky-300">types.ts</strong>: Definición de contratos e interfaces de datos (DimActor, RegLote, MayoristaInfo, PdvEntregaItem, etc.).</div>
-                  <div>├── <strong className="text-sky-300">data/mockData.ts</strong>: Fuente canónica de datos maestros (13 CEDIs, 65 Mayoristas, catálogo F01-F16, 84 actores).</div>
+                  <div>├── <strong className="text-sky-300">App.tsx</strong>: Orquestador raíz. Administra el estado global compartido (<code>activeScreen</code>, <code>lotsList</code>, <code>devoluciones</code>, <code>inventario</code>, <code>notasCredito</code>).</div>
+                  <div>├── <strong className="text-sky-300">types.ts</strong>: Contratos de datos TypeScript (<code>DimActor</code>, <code>RegLote</code>, <code>FacNotaCredito</code>, <code>CustodiaLoteInfo</code>, etc.).</div>
+                  <div>├── <strong className="text-sky-300">data/mockData.ts</strong>: Fuente canónica de datos maestros (13 CEDIs, 65 Mayoristas, <code>LOTE_CUSTODIA_MAP</code>, <code>INITIAL_NOTAS_CREDITO</code>).</div>
                   <div>├── <strong className="text-sky-300">components/</strong>:
                     <div className="pl-4 space-y-0.5 mt-0.5 text-slate-400">
                       <div>├── <span className="text-slate-200">Sidebar.tsx</span>: Navegación lateral entre las 6 pantallas con badges dinámicos de alertas.</div>
@@ -501,11 +640,12 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                       <div>└── <span className="text-slate-200">screens/</span>:
                         <div className="pl-4 space-y-0.5 text-slate-300">
                           <div>├── <span className="text-amber-300">Screen1SystemDiagram.tsx</span>: Lienzo TGS con 12 nodos y conmutador de 4 logísticas.</div>
-                          <div>├── <span className="text-amber-300">Screen2Traceability.tsx</span>: Árbol genealógico de lotes y conmutador de bloqueo ERP.</div>
+                          <div>├── <span className="text-amber-300">Screen2Traceability.tsx</span>: Árbol genealógico con custodia de salida y sello de Nota de Crédito.</div>
                           <div>├── <span className="text-amber-300">Screen3InventoryDistribution.tsx</span>: Mapa de Paraguay, stock de 13 CEDIs y 65 mayoristas.</div>
-                          <div>├── <span className="text-amber-300">Screen4ReverseLogistics.tsx</span>: Consola de devoluciones con autómata de calidad.</div>
-                          <div>├── <span className="text-amber-300">Screen5DatabaseViewer.tsx</span>: Diagrama ERD y consola de simulación SQL.</div>
-                          <div>└── <span className="text-amber-300">Screen6ArchitectureDocs.tsx</span>: Memoria técnica, lógica de negocio y manual integral.</div>
+                          <div>├── <span className="text-amber-300">Screen4ReverseLogistics.tsx</span>: Consola inversa con validación de custodia, handshake SIFEN y KuDE modal.</div>
+                          <div>├── <span className="text-amber-300">Screen5DatabaseViewer.tsx</span>: Diagrama ERD con FAC_NOTAS_CREDITO, DDL y visor SQL.</div>
+                          <div>├── <span className="text-amber-300">Screen6ArchitectureDocs.tsx</span>: Memoria técnica, lógica de negocio y manual integral.</div>
+                          <div>└── <span className="text-amber-300">guia_tecnica.tsx</span>: Guía paso a paso de requisitos, instalación y VS Code.</div>
                         </div>
                       </div>
                     </div>
@@ -548,6 +688,76 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                   <strong className="text-slate-900">Navegación Cruzada entre Módulos:</strong>
                   <span className="text-slate-600 ml-1">Todas las pantallas reciben <code>onNavigateScreen(screenNumber)</code>. Esto permite que desde un nodo en Screen 1 se salte directo al CEDI en Screen 3 o al lote en Screen 2 sin perder el contexto visual.</span>
                 </div>
+              </div>
+
+              <div className="p-2 rounded border border-slate-200 bg-slate-50 flex items-start gap-2">
+                <span className="w-5 h-5 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-[10px] shrink-0">4</span>
+                <div>
+                  <strong className="text-slate-900">Handshake SIFEN / DNIT y Emisión KuDE (1:1):</strong>
+                  <span className="text-slate-600 ml-1">Al procesar la devolución, tras validar custodia contra <code>LOTE_CUSTODIA_MAP</code>, se simula la latencia con la DNIT (1.5s), calculando el CDC de 44 dígitos e invocando <code>handleAddDevolucion(newDev, newNc)</code>. El nuevo comprobante se almacena en el estado reactivo <code>notasCredito</code> de <code>App.tsx</code>, alimentando la barra de telemetría, el sello de crédito fiscal en Nivel 5 de Screen 2 y la tabla <code>FAC_NOTAS_CREDITO</code> en Screen 5.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Especificación de Interfaces Fiscales */}
+          <div className="bg-white rounded-lg border border-slate-200 p-3.5 shadow-xs">
+            <h3 className="text-xs font-bold text-slate-900 font-mono flex items-center gap-1.5 mb-1">
+              <Code2 className="w-4 h-4 text-cyan-600" />
+              4. Especificación Técnica de Contratos Fiscales (TypeScript)
+            </h3>
+            <p className="text-[11px] text-slate-600 mb-2">
+              Modelado estricto en <code>src/types.ts</code> para interoperabilidad con el sistema SIFEN y control de custodia:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 font-mono text-[10px]">
+              <div className="p-2.5 rounded bg-slate-900 text-slate-200 overflow-x-auto">
+                <span className="text-purple-300 font-bold block mb-1">// Entidad Fiscal KuDE</span>
+                <pre className="leading-relaxed">
+{`export interface FacNotaCredito {
+  id_nota_credito: string;
+  nro_comprobante_nc: string; // 001-005-XXXXXXX
+  timbrado_nro: string;       // 16428910 (DNIT)
+  cdc: string;                // 44 dígitos inmutables
+  fecha_emision: string;
+  fk_devolucion: number;      // FK -> TRANS_DEVOLUCIONES
+  fk_lote: string;            // FK -> REG_LOTES
+  nombre_producto: string;
+  fk_distribuidor_codigo: string;
+  nombre_distribuidor: string;
+  ruc_distribuidor: string;
+  factura_venta_afectada: string;
+  furgon_frio: string;
+  cantidad_unidades: number;
+  precio_unitario_gs: number;
+  gravada_5_gs: number;       // Base Imponible
+  iva_5_gs: number;           // Total / 21
+  total_nc_gs: number;
+  motivo_nc: string;
+  estado_dnit: 'Aprobado SIFEN' | 'En Proceso' | 'Rechazado';
+}`}
+                </pre>
+              </div>
+
+              <div className="p-2.5 rounded bg-slate-900 text-slate-200 overflow-x-auto">
+                <span className="text-emerald-300 font-bold block mb-1">// Contrato de Custodia Antifraude</span>
+                <pre className="leading-relaxed">
+{`export interface CustodiaLoteInfo {
+  id_lote: string;
+  fk_distribuidor_codigo: string;
+  nombre_distribuidor: string;
+  ruc_distribuidor: string;
+  zona_cedi: string;
+  factura_venta_salida: string;
+  furgon_frio: string;
+  saldo_facturado_disponible: number;
+  precio_unitario_gs: number;
+  fecha_despacho: string;
+}
+
+// Mapa inmutable de validación:
+export const LOTE_CUSTODIA_MAP: Record<string, CustodiaLoteInfo>;`}
+                </pre>
               </div>
             </div>
           </div>
@@ -608,11 +818,12 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                   </button>
                 </div>
                 <p className="text-slate-600 text-[10.5px] mb-2 leading-relaxed">
-                  <strong>¿Para qué sirve?:</strong> Permite auditar el ADN completo de cualquier lote de yogur, leche, queso o dulce de leche, rastreando hacia atrás de qué tambos salió la leche y hacia qué CEDI se envió.
+                  <strong>¿Para qué sirve?:</strong> Permite auditar el ADN completo de cualquier lote de yogur, leche, queso o dulce de leche, rastreando hacia atrás de qué tambos salió la leche y hacia adelante la cadena de custodia de salida y notas de crédito asociadas.
                 </p>
                 <div className="bg-white p-2 rounded border border-slate-200 text-[10px] space-y-1">
                   <div>• <strong>Buscador y Chips de Lotes:</strong> Escribe un código o haz clic en los chips rápidos (ej: <code>LOT-YOG-2026-004</code>).</div>
                   <div>• <strong>Árbol Genealógico Jerárquico:</strong> Observa la conexión ramificada en 5 niveles: Nivel 1 (Tamberos), Nivel 2 (Acopiador), Nivel 3 (Pasteurización y Ensayos), Nivel 4 (CEDI Destino) y Nivel 5 (Mayoristas).</div>
+                  <div>• <strong>Custodia Comercial de Salida y Notas de Crédito:</strong> En el Nivel 5 del lote, visualiza la <em>Factura de Venta Original</em> y el <em>Furgón de Frío asignado</em>. Si el lote ha registrado una devolución, se desplegará el badge fiscal especial: <code>[📜 Lote con Nota de Crédito por Devolución Parcial - SIFEN / DNIT]</code>.</div>
                   <div>• <strong>Botón Recall ERP:</strong> Presiona "Bloquear Lote en ERP" para simular una alerta sanitaria y comprobar cómo se propaga el aviso de retiro a toda la empresa.</div>
                 </div>
               </div>
@@ -642,27 +853,164 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                 </div>
               </div>
 
-              {/* Screen 4 Guide */}
-              <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition-colors">
-                <div className="flex items-center justify-between mb-1.5">
+              {/* Screen 4 Guide - ULTRA COMPLETA PASO A PASO */}
+              <div className="p-3.5 rounded-lg border-2 border-amber-300 bg-amber-50/30 hover:bg-amber-50/50 transition-colors shadow-xs">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-amber-600 text-white flex items-center justify-center font-bold text-xs">4</span>
-                    <h4 className="font-bold text-xs text-slate-900">Módulo 4: Consola de Gestión de Devoluciones (Logística Inversa)</h4>
+                    <span className="w-6 h-6 rounded bg-amber-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">4</span>
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                        <span>Módulo 4: Consola de Gestión de Devoluciones (Logística Inversa & KuDE)</span>
+                        <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[9px] font-bold">Guía Paso a Paso</span>
+                      </h4>
+                      <p className="text-[10px] text-slate-500 font-mono">Gestión legal, sanitaria y tributaria de retornos comerciales con emisión oficial ante la DNIT</p>
+                    </div>
                   </div>
                   <button
                     onClick={() => onNavigateScreen(4)}
-                    className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 text-[10px] font-bold cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-600 text-white hover:bg-amber-700 text-[10.5px] font-bold cursor-pointer transition-all shadow-xs"
                   >
                     <span>Ir a Pantalla 4</span>
-                    <ChevronRight className="w-3 h-3" />
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <p className="text-slate-600 text-[10.5px] mb-2 leading-relaxed">
-                  <strong>¿Para qué sirve?:</strong> Resuelve el bucle de retorno de productos devueltos por los clientes, garantizando que los productos en mal estado jamás vuelvan al mercado y procesando mermas o reingresos.
+
+                <p className="text-slate-700 text-[11px] mb-3 leading-relaxed">
+                  <strong>Propósito Operativo & Legal:</strong> Permite registrar la devolución comercial de productos lácteos, verificar la legitimidad de custodia contra fraude, ejecutar el análisis sanitario del <em>Cerebro de Calidad</em> y emitir la <strong>Nota de Crédito Electrónica oficial (KuDE / SIFEN)</strong> timbrada por la DNIT con IVA al 5%.
                 </p>
-                <div className="bg-white p-2 rounded border border-slate-200 text-[10px] space-y-1">
-                  <div>• <strong>Registrar Nueva Devolución:</strong> Completa el formulario seleccionando el lote, origen y la causal (Vencido, Defectuoso, Averiado, Exceso).</div>
-                  <div>• <strong>Cerebro de Calidad Automático:</strong> El sistema aplica la regla normativa en milisegundos y te indica si el producto va a destrucción de efluentes, re-empaque o stock disponible.</div>
+
+                {/* Paso a Paso Detallado */}
+                <div className="bg-white p-3 rounded-lg border border-amber-200 space-y-3 text-[10.5px]">
+                  <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5 pb-1 border-b border-slate-100">
+                    <Workflow className="w-4 h-4 text-amber-600" />
+                    Protocolo Operativo Integral: 8 Pasos para Registrar una Devolución y Emitir el KuDE
+                  </div>
+
+                  {/* Paso 1 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 1: Seleccionar el Distribuidor Mayorista Reclamante</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        En el desplegable <em>"Distribuidor Mayorista (Origen)"</em>, selecciona el distribuidor que solicita la devolución (ej: <code>DIST-001 Mayorista San Cayetano S.R.L.</code>). El sistema cargará automáticamente su <strong>RUC oficial (80029144-1)</strong> y su CEDI Zonal de pertenencia (Z1 Central).
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Paso 2 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 2: Seleccionar el Lote y Validar la Custodia Antifraude</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        En el selector <em>"Lote a Devolver"</em>, elige el lote reclamado (ej: <code>LOT-YOG-2026-004</code>). En tiempo real, el autómata ejecuta el cruce contra el mapa inmutable <code>LOTE_CUSTODIA_MAP</code>:
+                      </p>
+                      <div className="mt-1.5 grid grid-cols-1 md:grid-cols-2 gap-2 text-[9.5px]">
+                        <div className="p-1.5 rounded bg-emerald-50 border border-emerald-200">
+                          <strong className="text-emerald-900 font-bold flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            Escenario 1: Custodia Aprobada (Verde)
+                          </strong>
+                          <p className="text-emerald-800 mt-0.5">
+                            Si el lote fue despachado a este mayorista, se despliega la <strong>Factura de Salida (001-003-0089214)</strong>, el furgón térmico y el saldo facturado disponible. El botón de envío se <strong>desbloquea</strong>.
+                          </p>
+                        </div>
+                        <div className="p-1.5 rounded bg-rose-50 border border-rose-200">
+                          <strong className="text-rose-900 font-bold flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-rose-500" />
+                            Escenario 2: Alerta Antifraude (Rojo)
+                          </strong>
+                          <p className="text-rose-800 mt-0.5">
+                            Si el lote pertenece a otro cliente o no existe registro de despacho, se dispara una alerta de seguridad roja. El botón de envío queda <strong>bloqueado estrictamente</strong>.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paso 3 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 3: Ingresar la Cantidad a Retornar y Verificar Saldo Facturado</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        Indica la cantidad física de unidades/litros a devolver en el campo numérico (ej: <code>350</code>). El sistema valida que la cifra no exceda el saldo máximo facturado original (control anti-sobregiro), garantizando que el mayorista no pueda devolver más mercadería de la que compró.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Paso 4 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">4</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 4: Seleccionar la Causal y Respetar la Coexistencia Sanitaria de Fechas</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        Selecciona el motivo del retorno entre: <strong>Vencido</strong>, <strong>Defectuoso</strong>, <strong>Averiado</strong> o <strong>Exceso</strong>.
+                      </p>
+                      <div className="mt-1 p-1.5 rounded bg-amber-50 border border-amber-200 text-amber-900 text-[9.5px]">
+                        <strong>⚠️ Regla Sanitaria de Coexistencia:</strong> Si el lote seleccionado ya expiró por fecha (días ≤ 0), el sistema <strong>inhabilita de forma forzada</strong> las opciones de Averiado y Exceso. El operador solo podrá seleccionar "Vencido" para cumplir el Código Sanitario Paraguayo (Ley N° 836/80).
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paso 5 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">5</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 5: Revisar el Dictamen Automático del Cerebro de Calidad</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        Antes de enviar, observa el cuadro inferior con el dictamen bromatológico: se detalla el <strong>Destino Físico</strong> (Planta de Efluentes, Laboratorio de Calidad, Re-empaque o Cámara Fría), el <strong>Flujo TGS Asignado</strong> (F10, F11, F12 o F14) y si se activará el bloqueo preventivo del lote en el ERP central.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Paso 6 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">6</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 6: Transmisión y Simulación del Handshake SIFEN / DNIT (1.5 segundos)</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        Haz clic en el botón <strong>"Procesar Devolución y Emitir KuDE (SIFEN)"</strong>. El sistema inicia la secuencia asíncrona de conexión con los servidores tributarios de la DNIT: empaqueta el XML, aplica la firma digital X.509 de Lactolanda, transmite por WebService seguro y genera el <strong>Código de Control (CDC) inmutable de 44 dígitos</strong>.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Paso 7 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-purple-50/50 border border-purple-200">
+                    <span className="w-5 h-5 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">7</span>
+                    <div>
+                      <strong className="text-purple-950 block text-[11px] flex items-center gap-1.5">
+                        <Receipt className="w-3.5 h-3.5 text-purple-700" />
+                        Paso 7: Apertura e Inspección de la Nota de Crédito Oficial (KuDE Modal)
+                      </strong>
+                      <p className="text-slate-700 text-[10px] mt-0.5 leading-relaxed">
+                        Al recibir el visto bueno de la DNIT, se abre automáticamente la ventana modal del <strong>KuDE Oficial</strong>:
+                      </p>
+                      <div className="mt-1 space-y-0.5 text-slate-600 text-[9.5px]">
+                        <div>• Verifica el Timbrado <code>16428910</code> y la numeración <code>001-005-XXXXXXX</code>.</div>
+                        <div>• Audita el CDC de 44 dígitos y escanea el código QR bidimensional.</div>
+                        <div>• Constata el cálculo legal del <strong>IVA al 5%</strong> (<code>Total Gs. / 21</code>) exigido por la Ley N° 6380/19.</div>
+                        <div>• Puedes presionar <strong>"Imprimir KuDE"</strong> para simular la entrega física del comprobante al transportista o chofer del furgón.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paso 8 */}
+                  <div className="flex items-start gap-2.5 p-2 rounded bg-slate-50 border border-slate-100">
+                    <span className="w-5 h-5 rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">8</span>
+                    <div>
+                      <strong className="text-slate-900 block text-[11px]">Paso 8: Constatación Multi-Pantalla en Tiempo Real</strong>
+                      <p className="text-slate-600 text-[10px] mt-0.5 leading-relaxed">
+                        Comprueba cómo la nueva devolución se propaga instantáneamente por todo el ecosistema Lactolanda:
+                      </p>
+                      <div className="mt-1 space-y-0.5 text-slate-600 text-[9.5px]">
+                        <div>• <strong>En Pantalla 2:</strong> Busca el lote devuelto y comprueba su nuevo sello de Nota de Crédito en el Nivel 5.</div>
+                        <div>• <strong>En Pantalla 5:</strong> Revisa la tabla <code>TRANS_DEVOLUCIONES</code> y la tabla <code>FAC_NOTAS_CREDITO</code> para ver la tupla persistida.</div>
+                        <div>• <strong>En Pantalla 1:</strong> Observa la tabla de inventario donde se descuenta el stock o se manda a destrucción según el flujo F asignado.</div>
+                        <div>• <strong>En el Footer:</strong> Observa cómo el contador global de Notas de Crédito y devoluciones se incrementa en vivo.</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -671,7 +1019,7 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
                     <span className="w-6 h-6 rounded bg-purple-600 text-white flex items-center justify-center font-bold text-xs">5</span>
-                    <h4 className="font-bold text-xs text-slate-900">Módulo 5: Base de Datos & Visualizador SQL</h4>
+                    <h4 className="font-bold text-xs text-slate-900">Módulo 5: Base de Datos, ERD Relacional & Visualizador SQL</h4>
                   </div>
                   <button
                     onClick={() => onNavigateScreen(5)}
@@ -682,11 +1030,12 @@ export const Screen6ArchitectureDocs: React.FC<Screen6Props> = ({ onNavigateScre
                   </button>
                 </div>
                 <p className="text-slate-600 text-[10.5px] mb-2 leading-relaxed">
-                  <strong>¿Para qué sirve?:</strong> Demuestra la solidez del modelo de datos formal en Tercera Forma Normal (3NF), permitiendo auditar llaves primarias, foráneas y ejecutar consultas SQL de prueba.
+                  <strong>¿Para qué sirve?:</strong> Demuestra la solidez del modelo de datos formal en Tercera Forma Normal (3NF), permitiendo auditar llaves primarias, foráneas, la nueva entidad fiscal <code>FAC_NOTAS_CREDITO</code> y ejecutar consultas SQL de prueba.
                 </p>
                 <div className="bg-white p-2 rounded border border-slate-200 text-[10px] space-y-1">
-                  <div>• <strong>Diagrama ERD:</strong> Visualiza cómo se conectan las tablas maestras con las tablas transaccionales.</div>
-                  <div>• <strong>Consola SQL Interactiva:</strong> Ejecuta consultas SELECT prediseñadas para verificar la persistencia y cálculos de stock.</div>
+                  <div>• <strong>Diagrama ERD:</strong> Visualiza cómo se conectan las tablas maestras con las transaccionales, incluyendo la relación 1:1 entre <code>TRANS_DEVOLUCIONES</code> y <code>FAC_NOTAS_CREDITO</code>.</div>
+                  <div>• <strong>Diccionario y Explorador de Tablas:</strong> Inspecciona campos como <code>cdc</code>, <code>timbrado_nro</code>, <code>iva_5_gs</code> y <code>estado_dnit</code>.</div>
+                  <div>• <strong>Consola SQL Interactiva:</strong> Ejecuta consultas SELECT prediseñadas para auditar devoluciones y créditos fiscales emitidos en tiempo real.</div>
                 </div>
               </div>
             </div>

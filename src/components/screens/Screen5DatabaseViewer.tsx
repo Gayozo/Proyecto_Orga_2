@@ -107,11 +107,30 @@ export const Screen5DatabaseViewer: React.FC<Screen5Props> = ({
         string destino_final
         datetime fecha_registro
     }
+    FAC_NOTAS_CREDITO {
+        string id_nota_credito PK
+        string nro_comprobante_nc
+        string timbrado_nro
+        string cdc
+        datetime fecha_emision
+        int fk_devolucion FK
+        string fk_lote FK
+        string fk_distribuidor_codigo
+        string ruc_distribuidor
+        string factura_venta_afectada
+        int cantidad_unidades
+        float precio_unitario_gs
+        float gravada_5_gs
+        float iva_5_gs
+        float total_nc_gs
+        string estado_dnit
+    }
 
     DIM_ACTORES ||--o{ TRANS_INVENTARIO : "actua como origen/destino"
     DIM_PRODUCTOS ||--o{ REG_LOTES : "pertenece a"
     REG_LOTES ||--o{ TRANS_INVENTARIO : "se mueve en"
-    TRANS_INVENTARIO ||--o{ TRANS_DEVOLUCIONES : "genera un retorno"`;
+    TRANS_INVENTARIO ||--o{ TRANS_DEVOLUCIONES : "genera un retorno"
+    TRANS_DEVOLUCIONES ||--|| FAC_NOTAS_CREDITO : "respalda fiscalmente"`;
 
           mermaidRef.current.innerHTML = '';
           const { svg } = await mermaid.render('lactolanda-erd-svg', chartDefinition);
@@ -202,6 +221,30 @@ CREATE TABLE TRANS_DEVOLUCIONES (
     estado_proceso VARCHAR(80) NOT NULL,
     destino_final VARCHAR(100) NOT NULL, -- Destrucción / Re-empaque / Desvío
     fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- TABLA 6: NOTAS DE CRÉDITO ELECTRÓNICAS (SIFEN / DNIT PARAGUAY)
+CREATE TABLE FAC_NOTAS_CREDITO (
+    id_nota_credito VARCHAR(30) PRIMARY KEY,
+    nro_comprobante_nc VARCHAR(20) NOT NULL UNIQUE,
+    timbrado_nro VARCHAR(15) NOT NULL,
+    cdc VARCHAR(44) NOT NULL UNIQUE,
+    fecha_emision TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fk_devolucion INT NOT NULL UNIQUE REFERENCES TRANS_DEVOLUCIONES(id_devolucion),
+    fk_lote VARCHAR(50) NOT NULL REFERENCES REG_LOTES(id_lote),
+    nombre_producto VARCHAR(150) NOT NULL,
+    fk_distribuidor_codigo VARCHAR(20) NOT NULL,
+    nombre_distribuidor VARCHAR(150) NOT NULL,
+    ruc_distribuidor VARCHAR(20) NOT NULL,
+    factura_venta_afectada VARCHAR(25) NOT NULL,
+    furgon_frio VARCHAR(100),
+    cantidad_unidades INT NOT NULL,
+    precio_unitario_gs NUMERIC(12, 2) NOT NULL,
+    gravada_5_gs NUMERIC(14, 2) NOT NULL,
+    iva_5_gs NUMERIC(14, 2) NOT NULL, -- Liquidación IVA 5% según Ley 6380/19
+    total_nc_gs NUMERIC(14, 2) NOT NULL,
+    motivo_nc VARCHAR(255) NOT NULL,
+    estado_dnit VARCHAR(30) NOT NULL DEFAULT 'Aprobado SIFEN'
 );`;
 
   const copyToClipboard = () => {
@@ -224,7 +267,7 @@ CREATE TABLE TRANS_DEVOLUCIONES (
               Visualizador y Estructura de Base de Datos
             </h2>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              5 tablas maestras (DIM y TRANS) que sustentan la trazabilidad de flujos directos (F01-F08) e inversos (F09-F16).
+              6 tablas maestras (DIM, TRANS y FAC) que sustentan la trazabilidad de flujos directos (F01-F08), inversos (F09-F16) y respaldo legal KuDE (DNIT).
             </p>
           </div>
 
@@ -272,7 +315,7 @@ CREATE TABLE TRANS_DEVOLUCIONES (
             }`}
           >
             <Table className="w-3.5 h-3.5" />
-            <span>Diccionario de Tablas (5)</span>
+            <span>Diccionario de Tablas (6)</span>
           </button>
 
           <button
@@ -489,6 +532,7 @@ CREATE TABLE TRANS_DEVOLUCIONES (
               { name: 'REG_LOTES', desc: 'Trazabilidad y Genealogía' },
               { name: 'TRANS_INVENTARIO', desc: 'Flujos Directos (F01 a F08)' },
               { name: 'TRANS_DEVOLUCIONES', desc: 'Logística Inversa (F09 a F16)' },
+              { name: 'FAC_NOTAS_CREDITO', desc: 'Comprobantes Electrónicos KuDE (SIFEN / DNIT)' },
             ].map((tbl) => {
               const isSelected = selectedTable === tbl.name;
               return (
@@ -646,6 +690,48 @@ CREATE TABLE TRANS_DEVOLUCIONES (
                       <tr><td className="p-2 font-bold">cantidad_devuelta</td><td className="p-2">NUMERIC</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Litros o unidades retornadas</td></tr>
                       <tr><td className="p-2 font-bold">estado_proceso</td><td className="p-2">VARCHAR</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Estado de inspección y tránsito</td></tr>
                       <tr><td className="p-2 font-bold">destino_final</td><td className="p-2">VARCHAR</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Destrucción / Re-empaque / Desvío</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {selectedTable === 'FAC_NOTAS_CREDITO' && (
+              <div className="mt-2.5 text-xs space-y-2">
+                <p className="text-[11px] text-slate-600">
+                  <strong>Propósito:</strong> Registra los comprobantes fiscales electrónicos (KuDE / SIFEN) emitidos ante la Dirección Nacional de Ingresos Tributarios (DNIT) de Paraguay para respaldar legalmente las devoluciones comerciales e inversas de productos lácteos según Ley N° 6380/19 (IVA 5%).
+                </p>
+                <div className="overflow-x-auto rounded border border-slate-200">
+                  <table className="w-full text-left text-[10px]">
+                    <thead className="bg-slate-100 text-slate-700 uppercase text-[9px] font-mono">
+                      <tr>
+                        <th className="p-2">Campo</th>
+                        <th className="p-2">Tipo</th>
+                        <th className="p-2">Llave</th>
+                        <th className="p-2">Descripción & Regla de Negocio</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-mono">
+                      <tr><td className="p-2 font-bold text-purple-700">id_nota_credito</td><td className="p-2">VARCHAR(30)</td><td className="p-2 font-bold text-rose-600">PK</td><td className="p-2 font-sans">Identificador interno del documento de crédito</td></tr>
+                      <tr><td className="p-2 font-bold">nro_comprobante_nc</td><td className="p-2">VARCHAR(20)</td><td className="p-2 font-bold text-emerald-600">UNIQUE</td><td className="p-2 font-sans">Numeración legal SIFEN (ej. 001-005-0001842)</td></tr>
+                      <tr><td className="p-2 font-bold">timbrado_nro</td><td className="p-2">VARCHAR(15)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Timbrado oficial DNIT asignado a La Holanda Ltda. (16428910)</td></tr>
+                      <tr><td className="p-2 font-bold">cdc</td><td className="p-2">VARCHAR(44)</td><td className="p-2 font-bold text-emerald-600">UNIQUE</td><td className="p-2 font-sans">Código de Control inmutable de 44 dígitos exigido por SIFEN</td></tr>
+                      <tr><td className="p-2 font-bold">fecha_emision</td><td className="p-2">TIMESTAMP</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Fecha y hora oficial de transmisión y aprobación</td></tr>
+                      <tr><td className="p-2 font-bold">fk_devolucion</td><td className="p-2">INT</td><td className="p-2 font-bold text-blue-600">FK</td><td className="p-2 font-sans">Relación 1 a 1 con TRANS_DEVOLUCIONES(id_devolucion)</td></tr>
+                      <tr><td className="p-2 font-bold">fk_lote</td><td className="p-2">VARCHAR(50)</td><td className="p-2 font-bold text-blue-600">FK</td><td className="p-2 font-sans">Lote de producto retornado vinculado a REG_LOTES(id_lote)</td></tr>
+                      <tr><td className="p-2 font-bold">nombre_producto</td><td className="p-2">VARCHAR(150)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Descripción comercial del producto lácteo</td></tr>
+                      <tr><td className="p-2 font-bold">fk_distribuidor_codigo</td><td className="p-2">VARCHAR(20)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Código del distribuidor mayorista receptor (ej. DM Z5 1)</td></tr>
+                      <tr><td className="p-2 font-bold">nombre_distribuidor</td><td className="p-2">VARCHAR(150)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Razón social del titular del crédito comercial</td></tr>
+                      <tr><td className="p-2 font-bold">ruc_distribuidor</td><td className="p-2">VARCHAR(20)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">RUC oficial del mayorista con dígito verificador</td></tr>
+                      <tr><td className="p-2 font-bold">factura_venta_afectada</td><td className="p-2">VARCHAR(25)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Factura original de despacho que se modifica o anula</td></tr>
+                      <tr><td className="p-2 font-bold">furgon_frio</td><td className="p-2">VARCHAR(100)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Vehículo y chapa de transporte térmico verificado</td></tr>
+                      <tr><td className="p-2 font-bold">cantidad_unidades</td><td className="p-2">INT</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Volumen en litros o unidades devueltas aprobadas</td></tr>
+                      <tr><td className="p-2 font-bold">precio_unitario_gs</td><td className="p-2">NUMERIC(12,2)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Precio de venta mayorista unitario en Guaraníes</td></tr>
+                      <tr><td className="p-2 font-bold">gravada_5_gs</td><td className="p-2">NUMERIC(14,2)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Base imponible gravada al 5% (Lácteos según Ley 6380)</td></tr>
+                      <tr><td className="p-2 font-bold">iva_5_gs</td><td className="p-2">NUMERIC(14,2)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Liquidación del IVA 5%: Total Gravada / 21</td></tr>
+                      <tr><td className="p-2 font-bold text-blue-700">total_nc_gs</td><td className="p-2">NUMERIC(14,2)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Importe total acreditado a la cuenta del distribuidor</td></tr>
+                      <tr><td className="p-2 font-bold">motivo_nc</td><td className="p-2">VARCHAR(255)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Justificación reglamentaria de la nota de crédito</td></tr>
+                      <tr><td className="p-2 font-bold text-emerald-700">estado_dnit</td><td className="p-2">VARCHAR(30)</td><td className="p-2 text-slate-400">-</td><td className="p-2 font-sans">Aprobado SIFEN / En Proceso / Rechazado</td></tr>
                     </tbody>
                   </table>
                 </div>

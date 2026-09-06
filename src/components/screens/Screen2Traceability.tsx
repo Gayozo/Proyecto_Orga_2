@@ -23,21 +23,25 @@ import {
   ArrowDown,
   Microscope,
   Flame,
-  Store
+  Store,
+  FileText,
+  ShieldCheck
 } from 'lucide-react';
-import { RegLote } from '../../types';
-import { LOTES_DATA, CEDIS_LIST } from '../../data/mockData';
+import { RegLote, FacNotaCredito } from '../../types';
+import { LOTES_DATA, CEDIS_LIST, LOTE_CUSTODIA_MAP, INITIAL_NOTAS_CREDITO } from '../../data/mockData';
 
 interface Screen2Props {
   lotsList: RegLote[];
   onToggleLotStatus: (lotId: string) => void;
   onNavigateScreen: (screen: number) => void;
+  notasCredito?: FacNotaCredito[];
 }
 
 export const Screen2Traceability: React.FC<Screen2Props> = ({
   lotsList,
   onToggleLotStatus,
-  onNavigateScreen
+  onNavigateScreen,
+  notasCredito = INITIAL_NOTAS_CREDITO
 }) => {
   const [searchQuery, setSearchQuery] = useState('LOT-YOG-2026-004');
   const [selectedLotId, setSelectedLotId] = useState('LOT-YOG-2026-004');
@@ -533,6 +537,83 @@ export const Screen2Traceability: React.FC<Screen2Props> = ({
                     <ChevronRight className="w-3 h-3" />
                   </button>
                 </div>
+
+                {/* TARJETA DE CUSTODIA COMERCIAL Y FACTURACIÓN ORIGINAL */}
+                {(() => {
+                  const lotCustody = LOTE_CUSTODIA_MAP[activeLot.id_lote];
+                  const lotNc = notasCredito.find((nc) => nc.fk_lote === activeLot.id_lote);
+
+                  return (
+                    <div className="mt-2.5 space-y-2">
+                      {lotCustody ? (
+                        <div className="p-2.5 rounded bg-white border border-purple-200 text-[10px] font-mono space-y-1.5 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1 text-purple-900 font-bold">
+                              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                              <span>Custodia Comercial de Salida (Lactolanda ERP):</span>
+                            </div>
+                            <span className="px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 font-bold text-[9px]">
+                              {lotCustody.mayorista_codigo}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-slate-700 bg-slate-50/70 p-2 rounded border border-slate-100">
+                            <div>
+                              <span className="text-slate-400 block text-[9px]">Mayorista Titular:</span>
+                              <strong className="text-slate-900">{lotCustody.mayorista_nombre}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[9px]">RUC / Factura Original:</span>
+                              <span className="text-slate-900 font-bold">{lotCustody.mayorista_ruc}</span>
+                              <span className="text-purple-700 block font-bold text-[9px]">FAC N° {lotCustody.factura_venta_nro}</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[9px]">Furgón Térmico:</span>
+                              <span className="text-slate-800 truncate block">{lotCustody.furgon_transporte}</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[9px]">Despacho Inicial / Saldo:</span>
+                              <span className="text-slate-900">{lotCustody.unidades_despachadas} u. ({lotCustody.fecha_despacho})</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {/* SELLO OFICIAL DE NOTA DE CRÉDITO POR DEVOLUCIÓN PARCIAL */}
+                      {lotNc && (
+                        <div className="p-2.5 rounded-lg bg-amber-50/80 border border-amber-300 text-amber-950 font-mono text-[10px] space-y-1 shadow-xs">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                              <FileText className="w-4 h-4 text-amber-600" />
+                              <span className="text-[11px]">[📜 LOTE CON NOTA DE CRÉDITO POR DEVOLUCIÓN PARCIAL - SIFEN / DNIT]</span>
+                            </div>
+                            <span className="px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold text-[9px]">
+                              {lotNc.estado_dnit}
+                            </span>
+                          </div>
+
+                          <p className="text-[10px] text-amber-900 leading-tight">
+                            Este lote registra retorno en logística inversa con emisión del comprobante fiscal <strong>{lotNc.nro_comprobante_nc}</strong> (Timbrado N° {lotNc.timbrado_nro}) a favor de <strong>{lotNc.nombre_distribuidor}</strong>.
+                          </p>
+
+                          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-amber-200">
+                            <div>
+                              <span className="text-slate-500">Unidades Acreditadas:</span> <strong>{lotNc.cantidad_unidades} {lotNc.unidad}</strong> • 
+                              <span className="text-slate-500 ml-1">Total Acreditado:</span> <strong className="text-blue-800">Gs. {lotNc.total_nc_gs.toLocaleString()} (IVA 5%: Gs. {lotNc.iva_5_gs.toLocaleString()})</strong>
+                            </div>
+                            <button
+                              onClick={() => onNavigateScreen(4)}
+                              className="px-2 py-0.5 rounded bg-blue-700 hover:bg-blue-800 text-white font-bold transition-colors cursor-pointer flex items-center gap-1 text-[9px]"
+                            >
+                              <span>Ver en Pantalla de Logística Inversa</span>
+                              <ChevronRight className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>

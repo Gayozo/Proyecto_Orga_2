@@ -124,6 +124,46 @@ export interface TransDevolucion {
   observaciones: string;
 }
 
+export interface FacNotaCredito {
+  id_nota_credito: string;
+  nro_comprobante_nc: string; // ej. 001-005-0001842
+  timbrado_nro: string; // ej. 16428910
+  cdc: string; // 44 dígitos oficiales SIFEN
+  fecha_emision: string;
+  fk_devolucion: number;
+  fk_lote: string;
+  nombre_producto: string;
+  fk_distribuidor_codigo: string; // ej: DM Z5 1
+  nombre_distribuidor: string;
+  ruc_distribuidor: string;
+  factura_venta_afectada: string; // ej: 001-003-0045812
+  furgon_frio: string; // Chapa y furgón
+  cantidad_unidades: number;
+  unidad: string;
+  precio_unitario_gs: number;
+  exenta_gs: number;
+  gravada_5_gs: number;
+  iva_5_gs: number; // 5% para lácteos según Ley 6380/19 (Total / 21)
+  total_nc_gs: number;
+  motivo_nc: string;
+  estado_dnit: 'Aprobado SIFEN' | 'Pendiente' | 'Rechazado';
+}
+
+export interface CustodiaLoteInfo {
+  lote_id: string;
+  mayorista_codigo: string;
+  mayorista_nombre: string;
+  mayorista_ruc: string;
+  cedi_origen: string;
+  factura_venta_nro: string;
+  fecha_despacho: string;
+  furgon_transporte: string;
+  temperatura_salida: number;
+  unidades_despachadas: number;
+  saldo_disponible_devolucion: number;
+  precio_unitario_gs: number;
+}
+
 export interface FlujoLogisticoInfo {
   id_flujo: string;
   area_origen: string;
